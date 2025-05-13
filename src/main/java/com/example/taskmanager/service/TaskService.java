@@ -12,30 +12,30 @@ import java.util.Optional;
 public class TaskService {
 
     @Autowired
-    private TaskRepository repository;
+    private TaskRepository taskRepository;
 
     public List<Task> getAllTasks() {
-        return repository.findAll();
+        return taskRepository.findAll();
     }
 
     public Optional<Task> getTaskById(Long id) {
-        return repository.findById(id);
+        return taskRepository.findById(id);
     }
 
     public Task createTask(Task task) {
-        return repository.save(task);
+        return taskRepository.save(task);
     }
 
-    public Task updateTask(Long id, Task updatedTask) {
-        return repository.findById(id).map(task -> {
-            task.setTitle(updatedTask.getTitle());
-            task.setDescription(updatedTask.getDescription());
-            task.setCompleted(updatedTask.isCompleted());
-            return repository.save(task);
-        }).orElse(null);
+    public Task updateTask(Long id, Task task) {
+        if (taskRepository.existsById(id)) {
+            task.setId(id);
+            return taskRepository.save(task);
+        } else {
+            throw new RuntimeException("Task not found with id: " + id);
+        }
     }
 
     public void deleteTask(Long id) {
-        repository.deleteById(id);
+        taskRepository.deleteById(id);
     }
 }
